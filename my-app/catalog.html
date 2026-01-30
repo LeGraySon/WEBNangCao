@@ -1,0 +1,39 @@
+<div class="container">
+  
+  <div *ngFor="let cate of datas" class="cate-group">
+    
+    <table>
+      <tr class="header-row">
+        <td style="width: 50%">Ma Danh Muc</td>
+        <td style="width: 50%">Ten Danh Muc</td>
+      </tr>
+      <tr>
+        <td>{{ cate.Cateid }}</td>
+        <td>{{ cate.CateName }}</td>
+      </tr>
+    </table>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Ma San Pham</th>
+          <th>Ten San Pham</th>
+          <th>Gia San Pham</th>
+          <th>Picture</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let p of cate.Products">
+          <td>{{ p.ProductId }}</td>
+          <td>{{ p.ProductName }}</td>
+          <td>{{ p.Price }}</td>
+          <td>
+            <img [src]="p.Image" width="50" height="60">
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+  </div>
+
+</div>

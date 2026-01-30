@@ -1,0 +1,26 @@
+<p>ex18 works!</p>
+<table border="1">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Age</th>
+            <th>#</th>
+        </tr>
+    </thead>
+    <tbody *ngFor="let group of customerGroups$ | async">
+        <tr>
+            <td colspan="5">{{group.CustomerTypeId}} - {{group.CustomterTypeName}}</td>
+        </tr>
+        <tr *ngFor="let cus of group.Customers">
+            <td>{{cus.Id}}</td>
+            <td>{{cus.Name}}</td>
+            <td>{{cus.Email}}</td>
+            <td>{{cus.Age}}</td>
+            <td>
+                <img [src]="cus.Image" width="100" height="100">
+            </td>
+        </tr>
+    </tbody>
+</table>
