@@ -1,0 +1,73 @@
+<p>ex21 works!</p>
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="card shadow">
+        <div class="card-header bg-primary text-white text-center">
+          <h3>Login Form</h3>
+        </div>
+        <div class="card-body">
+          <form #loginForm="ngForm" (ngSubmit)="onLogin()">
+            <!-- Email Input -->
+            <div class="mb-3">
+              <label for="email" class="form-label">Email:</label>
+              <input 
+                type="email" 
+                class="form-control" 
+                id="email" 
+                name="email"
+                [(ngModel)]="loginData.email"
+                placeholder="Enter your email"
+                required>
+              <small class="text-danger" *ngIf="emailError">{{ emailError }}</small>
+            </div>
+
+            <!-- Password Input -->
+            <div class="mb-3">
+              <label for="password" class="form-label">Password:</label>
+              <input 
+                type="password" 
+                class="form-control" 
+                id="password" 
+                name="password"
+                [(ngModel)]="loginData.password"
+                placeholder="Enter your password"
+                required>
+              <small class="text-danger" *ngIf="passwordError">{{ passwordError }}</small>
+            </div>
+
+            <!-- Save Login Checkbox -->
+            <div class="mb-3 form-check">
+              <input 
+                type="checkbox" 
+                class="form-check-input" 
+                id="saveLogin"
+                name="saveLogin"
+                [(ngModel)]="saveLogin">
+              <label class="form-check-label" for="saveLogin">
+                Save login information
+              </label>
+            </div>
+
+            <!-- Login Button -->
+            <div class="d-grid">
+              <button type="submit" class="btn btn-primary">Login</button>
+            </div>
+          </form>
+
+          <!-- JSON Output -->
+          <div class="mt-3" *ngIf="jsonOutput">
+            <p class="text-danger">{{ jsonOutput }}</p>
+          </div>
+
+          <!-- Login Hint -->
+          <div class="mt-3 text-center">
+            <small class="text-muted">
+              Hint: Email: admin@gmail.com | Password: 12345
+            </small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

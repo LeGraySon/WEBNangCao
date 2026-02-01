@@ -1,0 +1,73 @@
+<div class="page-wrapper">
+  <div class="form-card">
+    <div class="form-header">
+      <h3>Course Registration Form</h3>
+    </div>
+
+    <div class="form-content">
+      <form [formGroup]="registrationForm" (ngSubmit)="onSubmit()">
+
+        <div class="form-group">
+          <label>Student Name <span>*</span></label>
+          <input type="text"
+                 placeholder="Enter full name"
+                 formControlName="studentName"
+                 [class.invalid]="isFieldInvalid('studentName')">
+          <small *ngIf="isFieldInvalid('studentName')">Name is required</small>
+        </div>
+
+        <div class="form-group">
+          <label>Email <span>*</span></label>
+          <input type="email"
+                 placeholder="student@email.com"
+                 formControlName="email"
+                 [class.invalid]="isFieldInvalid('email')">
+          <small *ngIf="isFieldInvalid('email')">Invalid email</small>
+        </div>
+
+        <div class="form-group">
+          <label>Phone <span>*</span></label>
+          <input type="tel"
+                 placeholder="0123456789"
+                 formControlName="phone"
+                 [class.invalid]="isFieldInvalid('phone')">
+          <small *ngIf="isFieldInvalid('phone')">Phone must be 10 digits</small>
+        </div>
+
+        <div class="form-group">
+          <label>Course <span>*</span></label>
+          <select formControlName="course"
+                  [class.invalid]="isFieldInvalid('course')">
+            <option value="">Choose a course</option>
+            <option *ngFor="let c of courses" [value]="c">{{ c }}</option>
+          </select>
+          <small *ngIf="isFieldInvalid('course')">Please select a course</small>
+        </div>
+
+        <div class="form-group">
+          <label>Ca học <span>*</span></label>
+          <div class="radio-vertical">
+            <label><input type="radio" value="Sáng" formControlName="session"> Sáng</label>
+            <label><input type="radio" value="Tối" formControlName="session"> Tối</label>
+          </div>
+          <small *ngIf="isFieldInvalid('session')">Please select a session</small>
+        </div>
+
+        <div class="form-group">
+          <label>Điều kiện <span>*</span></label>
+          <label class="checkbox-vertical">
+            <input type="checkbox" formControlName="agree">
+            Tôi đồng ý với điều kiện
+          </label>
+          <small *ngIf="isFieldInvalid('agree')">You must agree</small>
+        </div>
+
+        <div class="button-group">
+          <button class="btn btn-primary" type="submit">Submit</button>
+          <button class="btn btn-outline" type="button" (click)="onReset()">Reset</button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>

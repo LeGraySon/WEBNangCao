@@ -1,0 +1,62 @@
+<div class="ticker-container">
+  <h1 class="title">Cryptocurrency Tickers</h1>
+
+  <div class="loading" *ngIf="loading">
+    <div class="spinner"></div>
+    <p>Loading cryptocurrency data...</p>
+  </div>
+
+  <div class="error" *ngIf="error">
+    <p>{{ error }}</p>
+    <button (click)="loadTickers()" class="btn-retry">Retry</button>
+  </div>
+
+  <div class="ticker-grid" *ngIf="!loading && !error && tickers.length > 0">
+    <div class="ticker-card" *ngFor="let ticker of tickers">
+      <div class="ticker-header">
+        <h3 class="ticker-name">{{ ticker.name }}</h3>
+        <span class="ticker-symbol">{{ ticker.symbol }}</span>
+      </div>
+      
+      <div class="ticker-rank">
+        <span class="rank-label">Rank:</span>
+        <span class="rank-value">#{{ ticker.rank }}</span>
+      </div>
+
+      <div class="ticker-price">
+        <span class="price-label">Price:</span>
+        <span class="price-value">${{ ticker.price_usd | number:'1.2-2' }}</span>
+      </div>
+
+      <div class="ticker-info">
+        <div class="info-row">
+          <span class="label">Market Cap:</span>
+          <span class="value">${{ ticker.market_cap_usd | number:'1.0-0' }}</span>
+        </div>
+        <div class="info-row">
+          <span class="label">24h Volume:</span>
+          <span class="value">${{ ticker['24h_volume_usd'] | number:'1.0-0' }}</span>
+        </div>
+      </div>
+
+      <div class="ticker-changes">
+        <div class="change-item" [class.positive]="isPositive(ticker.percent_change_1h)" [class.negative]="isNegative(ticker.percent_change_1h)">
+          <span class="change-label">1h:</span>
+          <span class="change-value">{{ ticker.percent_change_1h }}%</span>
+        </div>
+        <div class="change-item" [class.positive]="isPositive(ticker.percent_change_24h)" [class.negative]="isNegative(ticker.percent_change_24h)">
+          <span class="change-label">24h:</span>
+          <span class="change-value">{{ ticker.percent_change_24h }}%</span>
+        </div>
+        <div class="change-item" [class.positive]="isPositive(ticker.percent_change_7d)" [class.negative]="isNegative(ticker.percent_change_7d)">
+          <span class="change-label">7d:</span>
+          <span class="change-value">{{ ticker.percent_change_7d }}%</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="no-data" *ngIf="!loading && !error && tickers.length === 0">
+    <p>No cryptocurrency data available.</p>
+  </div>
+</div>

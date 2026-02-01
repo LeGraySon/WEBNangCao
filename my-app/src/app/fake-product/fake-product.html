@@ -1,0 +1,43 @@
+<h2>Fake Product API</h2>
+
+<div *ngIf="loading" class="loading">
+  <p>Loading data from API...</p>
+</div>
+
+<div *ngIf="errMessage" class="error">
+  <p>Error: {{errMessage}}</p>
+  <p>Check console (F12) for details</p>
+</div>
+
+<div *ngIf="data && data.length > 0">
+  <p>Total products: {{data.length}}</p>
+  
+  <table>
+      <thead>
+          <tr>
+              <th>Id</th>
+              <th>Title</th>
+              <th>Price</th>
+              <th>Description</th>
+              <th>Category</th>
+              <th>Image</th>
+              <th>Rating</th>
+          </tr>
+      </thead>
+      <tbody>
+          <tr *ngFor="let item of data">
+              <td>{{item.id}}</td>
+              <td>{{item.title}}</td>
+              <td>{{item.price | currency:'USD'}}</td>
+              <td>{{item.description}}</td>
+              <td>{{item.category}}</td>
+              <td><img [src]="item.image" width="100" height="100" ></td>
+              <td>{{item.rating.rate}} ({{item.rating.count}})</td>
+          </tr>
+      </tbody>
+  </table>
+</div>
+
+<div *ngIf="!loading && !errMessage && (!data || data.length === 0)">
+  <p>No data available</p>
+</div>
