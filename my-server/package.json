@@ -1,0 +1,16 @@
+{
+  "name": "my-server",
+  "version": "1.0.0",
+  "description": "K234111E Express Server",
+  "license": "ISC",
+  "author": "Le Doan Quoc Khanh",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "express": "^5.2.1",
+    "morgan": "^1.10.0"
+  }
+}

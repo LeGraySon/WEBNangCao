@@ -1,0 +1,126 @@
+<div class="form-container">
+  <div class="form-header">
+    <h1>{{ isEdit ? 'Chỉnh sửa sách' : 'Thêm sách mới' }}</h1>
+    <p class="form-subtitle">{{ isEdit ? 'Cập nhật thông tin sách' : 'Nhập thông tin chi tiết cuốn sách mới' }}</p>
+  </div>
+
+  <div class="error-banner" *ngIf="errMessage" role="alert">
+    <span class="error-icon">⚠️</span>
+    {{ errMessage }}
+  </div>
+
+  <form (ngSubmit)="save()" class="book-form">
+    <div class="form-sections">
+      <!-- Section 1: Basic Info -->
+      <fieldset class="form-section">
+        <legend>Thông tin cơ bản</legend>
+        <div class="form-row">
+          <label for="tensach">Tên sách <span class="required">*</span></label>
+          <input 
+            id="tensach"
+            type="text" 
+            [(ngModel)]="book.Tensach" 
+            name="Tensach" 
+            required 
+            placeholder="Nhập tên sách"
+            class="form-input"
+          />
+        </div>
+        <div class="form-row">
+          <label for="giaban">Giá bán (đ)</label>
+          <input 
+            id="giaban"
+            type="number" 
+            step="0.01" 
+            [(ngModel)]="book.Giaban" 
+            name="Giaban"
+            placeholder="0.00"
+            class="form-input"
+          />
+        </div>
+        <div class="form-row">
+          <label for="mota">Mô tả</label>
+          <textarea 
+            id="mota"
+            [(ngModel)]="book.Mota" 
+            name="Mota" 
+            rows="4"
+            placeholder="Nhập mô tả chi tiết về sách"
+            class="form-input"
+          ></textarea>
+        </div>
+      </fieldset>
+
+      <!-- Section 2: Cover Image -->
+      <fieldset class="form-section">
+        <legend>Ảnh bìa sách</legend>
+        <div class="form-row">
+          <label for="anhbia">Chọn ảnh (ảnh bìa)</label>
+          <input 
+            id="anhbia"
+            type="file" 
+            accept="image/*" 
+            (change)="onFileChange($event)"
+            class="form-input-file"
+          />
+          <p class="help-text">Kích thước tối đa: 5MB. Định dạng: JPG, PNG, GIF</p>
+        </div>
+        <div *ngIf="previewUrl" class="preview-container">
+          <img [src]="previewUrl" alt="Preview" class="preview-image" />
+          <button 
+            type="button" 
+            class="btn-remove" 
+            (click)="removeImage()"
+          >
+            Xóa ảnh
+          </button>
+        </div>
+      </fieldset>
+
+      <!-- Section 3: Stock & Categories -->
+      <fieldset class="form-section">
+        <legend>Kho và phân loại</legend>
+        <div class="form-row">
+          <label for="soluongton">Số lượng tồn</label>
+          <input 
+            id="soluongton"
+            type="number" 
+            [(ngModel)]="book.Soluongton" 
+            name="Soluongton"
+            placeholder="0"
+            class="form-input"
+          />
+        </div>
+        <div class="form-row">
+          <label for="macd">Mã chuyên đề</label>
+          <input 
+            id="macd"
+            type="number" 
+            [(ngModel)]="book.MaCD" 
+            name="MaCD"
+            placeholder="0"
+            class="form-input"
+          />
+        </div>
+        <div class="form-row">
+          <label for="manxb">Mã nhà xuất bản</label>
+          <input 
+            id="manxb"
+            type="number" 
+            [(ngModel)]="book.MaNXB" 
+            name="MaNXB"
+            placeholder="0"
+            class="form-input"
+          />
+        </div>
+      </fieldset>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn-submit">
+        {{ isEdit ? 'Cập nhật' : 'Thêm mới' }}
+      </button>
+      <a routerLink="/books" class="btn-cancel">Quay lại</a>
+    </div>
+  </form>
+</div>

@@ -1,0 +1,41 @@
+<h2>Chi tiết sách</h2>
+
+<div class="error" *ngIf="errMessage">{{ errMessage }}</div>
+
+<dl *ngIf="book" class="detail-list">
+  <dt>MaSach</dt>
+  <dd>{{ book.MaSach }}</dd>
+
+  <dt>Tensach</dt>
+  <dd>{{ book.Tensach }}</dd>
+
+  <dt>Giaban</dt>
+  <dd>{{ book.Giaban | number:'1.2-2' }}</dd>
+
+  <dt>Mota</dt>
+  <dd class="mota">{{ book.Mota }}</dd>
+
+  <dt>Anhbia</dt>
+  <dd>
+    <img *ngIf="book.Anhbia" [src]="getCoverUrl(book.Anhbia)" alt="Bìa sách" class="cover-img" />
+    <span *ngIf="!book.Anhbia">—</span>
+  </dd>
+
+  <dt>Ngaycapnhat</dt>
+  <dd>{{ formatDate(book.Ngaycapnhat) }}</dd>
+
+  <dt>Soluongton</dt>
+  <dd>{{ book.Soluongton }}</dd>
+
+  <dt>MaCD</dt>
+  <dd>{{ book.MaCD }}</dd>
+
+  <dt>MaNXB</dt>
+  <dd>{{ book.MaNXB }}</dd>
+</dl>
+
+<p>
+  <a routerLink="/books/edit/{{ book.MaSach }}" *ngIf="book">Edit</a>
+  <span *ngIf="book"> | </span>
+  <a routerLink="/books">Back to List</a>
+</p>

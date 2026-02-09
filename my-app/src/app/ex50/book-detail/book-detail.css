@@ -1,0 +1,45 @@
+h2 {
+  margin-bottom: 1rem;
+}
+
+.error {
+  color: #c00;
+  margin-bottom: 0.5rem;
+}
+
+.detail-list {
+  max-width: 600px;
+}
+
+.detail-list dt {
+  font-weight: 600;
+  margin-top: 0.75rem;
+  color: #333;
+}
+
+.detail-list dd {
+  margin-left: 0;
+  margin-bottom: 0.25rem;
+}
+
+.detail-list .mota {
+  white-space: pre-wrap;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.cover-img {
+  max-width: 200px;
+  max-height: 200px;
+  object-fit: contain;
+  border: 1px solid #ddd;
+}
+
+p a {
+  color: #0066cc;
+  text-decoration: none;
+}
+
+p a:hover {
+  text-decoration: underline;
+}

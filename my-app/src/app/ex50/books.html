@@ -1,0 +1,62 @@
+<div class="books-container">
+  <div class="header-section">
+    <div class="header-content">
+      <h1>QUẢN LÝ THÔNG TIN SÁCH</h1>
+      <p class="subtitle">Quản lý toàn bộ thông tin chi tiết về các cuốn sách</p>
+    </div>
+    <a routerLink="/books/new" class="btn-create">
+      <span class="btn-icon">+</span> Thêm sách mới
+    </a>
+  </div>
+
+  <div class="error-banner" *ngIf="errMessage" role="alert">{{ errMessage }}</div>
+
+  <div class="table-wrapper">
+    <table class="book-table" role="table">
+  <thead>
+    <tr>
+      <th>Tensach</th>
+      <th>Giaban</th>
+      <th>Mota</th>
+      <th>Anhbia</th>
+      <th>Ngaycapnhat</th>
+      <th>Soluongton</th>
+      <th>MaCD</th>
+      <th>MaNXB</th>
+      <th>Thao tác</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let book of books">
+      <td>{{ book.Tensach }}</td>
+      <td>{{ book.Giaban | number:'1.2-2' }}</td>
+      <td class="mota">{{ book.Mota }}</td>
+      <td>
+        <img *ngIf="book.Anhbia" [src]="getCoverUrl(book.Anhbia)" alt="Bìa" class="cover-thumb" />
+        <span *ngIf="!book.Anhbia">—</span>
+      </td>
+      <td>{{ formatDate(book.Ngaycapnhat) }}</td>
+      <td>{{ book.Soluongton }}</td>
+      <td>{{ book.MaCD }}</td>
+      <td>{{ book.MaNXB }}</td>
+      <td class="actions">
+        <a routerLink="/books/edit/{{ book.MaSach }}">Edit</a>
+        <span>|</span>
+        <a routerLink="/books/{{ book.MaSach }}">Details</a>
+        <span>|</span>
+        <a href="javascript:void(0)" (click)="confirmDelete(book)">Delete</a>
+      </td>
+    </tr>
+    </tbody>
+    </table>
+  </div>
+
+  <div *ngIf="books && books.length === 0 && !errMessage" class="empty-state">
+    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+      <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+    </svg>
+    <h3>Chưa có sách nào</h3>
+    <p>Hãy bắt đầu bằng cách thêm một cuốn sách mới</p>
+  </div>
+</div>
