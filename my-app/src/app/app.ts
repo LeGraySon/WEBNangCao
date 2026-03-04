@@ -1,15 +1,13 @@
 import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { Learnbinding } from './learnbinding/learnbinding';
-import { Ptb } from './ptb/ptb';
+import { HttpClientModule } from '@angular/common/http';
 
 @Component({
   selector: 'app-root',
   standalone: true,
   imports: [
     RouterOutlet,
-    Learnbinding,
-    Ptb
+    HttpClientModule
   ],
   templateUrl: './app.html',
   styles: [`

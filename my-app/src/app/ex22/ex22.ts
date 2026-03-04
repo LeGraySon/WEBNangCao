@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 
 // Model for registration data
 interface RegistrationModel {
@@ -13,9 +14,9 @@ interface RegistrationModel {
 
 @Component({
   selector: 'app-ex22',
-  standalone: false,
+  standalone: true,
+  imports: [ReactiveFormsModule, CommonModule],
   templateUrl: './ex22.html',
-  styleUrl: './ex22.css',
 })
 export class Ex22 implements OnInit {
   registrationForm!: FormGroup;

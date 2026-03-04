@@ -1,16 +1,20 @@
 {
   "name": "my-server",
   "version": "1.0.0",
-  "description": "K234111E Express Server",
+  "description": "K234111E Express Server - Momo Payment",
   "license": "ISC",
   "author": "Le Doan Quoc Khanh",
   "type": "commonjs",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "dev": "node index.js"
   },
   "dependencies": {
     "express": "^5.2.1",
-    "morgan": "^1.10.0"
+    "morgan": "^1.10.0",
+    "cors": "^2.8.5",
+    "axios": "^1.6.0",
+    "crypto": "^1.0.1"
   }
 }

@@ -8,7 +8,6 @@ import { Observable } from 'rxjs';
   standalone: true,
   imports: [NgFor, AsyncPipe],
   templateUrl: './ex18.html',
-  styleUrls: ['./ex18.css'],
 })
 export class Ex18 {
   customerGroups$: Observable<any>;

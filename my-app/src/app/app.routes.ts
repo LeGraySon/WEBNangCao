@@ -1,13 +1,13 @@
 import { Routes } from '@angular/router';
-import { Learnbinding } from './learnbinding/learnbinding';
 import { About } from './about/about';
 import { Contact } from './contact/contact';
-import { Ptb } from './ptb/ptb';
+import { PaymentComponent } from './payment/payment.component';
+import { PaymentResultComponent } from './payment-result/payment-result.component';
 
 export const routes: Routes = [
-  { path: '', redirectTo: 'learnbinding', pathMatch: 'full' },
-  { path: 'learnbinding', component: Learnbinding },
+  { path: '', redirectTo: 'about', pathMatch: 'full' },
   { path: 'about', component: About },
   { path: 'contact', component: Contact },
-  { path: 'ptb', component: Ptb }
+  { path: 'payment', component: PaymentComponent },
+  { path: 'payment-result', component: PaymentResultComponent }
 ];

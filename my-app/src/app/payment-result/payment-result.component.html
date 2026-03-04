@@ -1,0 +1,43 @@
+<div class="result-container">
+    <div class="result-card" [ngClass]="{'success': isSuccess, 'error': !isSuccess}">
+        <div class="result-icon">
+            <span *ngIf="isSuccess" class="icon-success">✓</span>
+            <span *ngIf="!isSuccess" class="icon-error">✕</span>
+        </div>
+
+        <div class="result-content">
+            <h2>{{ isSuccess ? 'Thanh toán thành công!' : 'Thanh toán thất bại!' }}</h2>
+            <p class="message">{{ message }}</p>
+
+            <div class="details">
+                <div class="detail-row">
+                    <span>Trạng thái:</span>
+                    <strong [ngClass]="{'status-success': isSuccess, 'status-error': !isSuccess}">
+                        {{ isSuccess ? 'Thành công' : 'Thất bại' }}
+                    </strong>
+                </div>
+                <div class="detail-row" *ngIf="orderId">
+                    <span>Mã đơn hàng:</span>
+                    <strong>{{ orderId }}</strong>
+                </div>
+                <div class="detail-row" *ngIf="amount">
+                    <span>Số tiền:</span>
+                    <strong>{{ amount | number:'1.0-0' }} VNĐ</strong>
+                </div>
+                <div class="detail-row" *ngIf="transId">
+                    <span>ID giao dịch:</span>
+                    <strong>{{ transId }}</strong>
+                </div>
+                <div class="detail-row">
+                    <span>Mã lỗi:</span>
+                    <strong>{{ resultCode }}</strong>
+                </div>
+            </div>
+        </div>
+
+        <div class="result-actions">
+            <button class="back-btn" (click)="goBackToHome()">Về trang chủ</button>
+            <button class="retry-btn" *ngIf="!isSuccess" (click)="retryPayment()">Thử lại</button>
+        </div>
+    </div>
+</div>

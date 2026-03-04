@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 
 // Model for login data
 interface LoginModel {
@@ -9,9 +11,9 @@ interface LoginModel {
 
 @Component({
   selector: 'app-ex21',
-  standalone: false,
+  standalone: true,
+  imports: [FormsModule, CommonModule],
   templateUrl: './ex21.html',
-  styleUrl: './ex21.css',
 })
 export class Ex21 implements OnInit {
   loginData: LoginModel = {

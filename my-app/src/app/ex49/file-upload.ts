@@ -8,7 +8,6 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './file-upload.html',
-  styleUrls: ['./file-upload.css']
 })
 export class FileUploadComponent {
   @Input()

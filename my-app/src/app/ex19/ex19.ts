@@ -6,7 +6,6 @@ import { RouterLink } from '@angular/router';
   standalone: true,
   imports: [RouterLink],
   templateUrl: './ex19.html',
-  styleUrls: ['./ex19.css'],
 })
 export class Ex19 {
 
