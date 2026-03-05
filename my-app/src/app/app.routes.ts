@@ -3,11 +3,13 @@ import { About } from './about/about';
 import { Contact } from './contact/contact';
 import { PaymentComponent } from './payment/payment.component';
 import { PaymentResultComponent } from './payment-result/payment-result.component';
+import { FashionComponent } from './fashion/fashion';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'about', pathMatch: 'full' },
   { path: 'about', component: About },
   { path: 'contact', component: Contact },
   { path: 'payment', component: PaymentComponent },
-  { path: 'payment-result', component: PaymentResultComponent }
+  { path: 'payment-result', component: PaymentResultComponent },
+  { path: 'fashion', component: FashionComponent }
 ];

@@ -1,0 +1,37 @@
+[
+    {
+        "context": ["/fashions"],
+        "target": "http://localhost:3002",
+        "secure": true,
+        "changeOrigin": true,
+        "logLevel": "debug"
+    },
+    {
+        "context": ["/exchange"],
+        "target": "https://www.dongabank.com.vn",
+        "secure": true,
+        "changeOrigin": true,
+        "logLevel": "debug"
+    },
+    {
+        "context": ["/products"],
+        "target": "https://fakestoreapi.com",
+        "secure": true,
+        "changeOrigin": true,
+        "logLevel": "debug"
+    },
+    {
+        "context": ["/books"],
+        "target": "http://localhost:3000",
+        "secure": true,
+        "changeOrigin": true,
+        "logLevel": "debug"
+    },
+    {
+        "context": ["/upload"],
+        "target": "http://localhost:3001",
+        "secure": true,
+        "changeOrigin": true,
+        "logLevel": "debug"
+    }
+]
