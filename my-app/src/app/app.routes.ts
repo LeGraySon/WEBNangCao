@@ -4,9 +4,11 @@ import { Contact } from './contact/contact';
 import { PaymentComponent } from './payment/payment.component';
 import { PaymentResultComponent } from './payment-result/payment-result.component';
 import { FashionComponent } from './fashion/fashion';
+import { Login } from './login/login';
 
 export const routes: Routes = [
-  { path: '', redirectTo: 'about', pathMatch: 'full' },
+  { path: '', redirectTo: 'login', pathMatch: 'full' },
+  { path: 'login', component: Login },
   { path: 'about', component: About },
   { path: 'contact', component: Contact },
   { path: 'payment', component: PaymentComponent },

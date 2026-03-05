@@ -1,0 +1,141 @@
+<style>
+.login-page {
+  min-height: calc(100vh - 120px);
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  padding: 24px;
+  background: #f5f6f8;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 560px;
+  border: 1px solid #d8dce3;
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
+}
+
+.login-header {
+  padding: 14px 18px;
+  border-bottom: 1px solid #e6e9ef;
+  font-size: 34px;
+  font-weight: 400;
+  color: #2b2f36;
+}
+
+.login-body {
+  padding: 20px 18px 18px;
+}
+
+.field-label {
+  display: block;
+  margin: 14px 0 8px;
+  font-size: 30px;
+  color: #333842;
+}
+
+.field-input {
+  width: 100%;
+  box-sizing: border-box;
+  height: 46px;
+  border: 1px solid #cfd5de;
+  border-radius: 8px;
+  padding: 0 14px;
+  font-size: 28px;
+  color: #1f2937;
+  outline: none;
+}
+
+.field-input:focus {
+  border-color: #90a7ff;
+  box-shadow: 0 0 0 3px rgba(96, 119, 255, 0.2);
+}
+
+.login-btn {
+  margin-top: 18px;
+  height: 52px;
+  min-width: 94px;
+  border: 0;
+  border-radius: 9px;
+  background: #5a4df2;
+  color: #fff;
+  font-size: 32px;
+  padding: 0 20px;
+  cursor: pointer;
+}
+
+.login-btn:hover {
+  background: #4c40d3;
+}
+
+.error-msg {
+  margin-top: 12px;
+  color: #c62828;
+  font-size: 22px;
+}
+
+.success-msg {
+  margin-top: 12px;
+  color: #2e7d32;
+  font-size: 22px;
+}
+
+.cookie-box {
+  margin-top: 16px;
+  padding: 12px;
+  border: 1px solid #e1e4ec;
+  border-radius: 8px;
+  background: #fafbff;
+  font-size: 18px;
+  color: #374151;
+}
+
+.hint {
+  margin-top: 12px;
+  color: #5f6672;
+  font-size: 16px;
+}
+</style>
+
+<div class="login-page">
+  <div class="login-card">
+    <div class="login-header">Login System</div>
+
+    <form class="login-body" (submit)="onLogin($event)">
+      <label for="username" class="field-label">User Name:</label>
+      <input
+        id="username"
+        name="username"
+        type="text"
+        class="field-input"
+        [(ngModel)]="username"
+      />
+
+      <label for="password" class="field-label">Password</label>
+      <input
+        id="password"
+        name="password"
+        type="password"
+        class="field-input"
+        [(ngModel)]="password"
+      />
+
+      <button type="submit" class="login-btn">Login</button>
+
+      <div class="error-msg" *ngIf="errorMsg">{{ errorMsg }}</div>
+      <div class="success-msg" *ngIf="successMsg">{{ successMsg }}</div>
+
+      <div class="cookie-box" *ngIf="cookieUser">
+        <div><strong>Cookie User:</strong></div>
+        <div>Username: {{ cookieUser.username }}</div>
+        <div>Full Name: {{ cookieUser.fullName }}</div>
+        <div>Role: {{ cookieUser.role }}</div>
+        <div>Login At: {{ cookieUser.loginAt }}</div>
+      </div>
+
+      <div class="hint">Sample users: `tranduythanh / 12345678` or `admin / admin123`</div>
+    </form>
+  </div>
+</div>
