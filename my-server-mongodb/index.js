@@ -1,18 +1,18 @@
 const express = require('express');
-const app = express();
-const port = 3002;
-
-const cookieParser = require('cookie-parser');
-app.use(cookieParser());
-
-const morgan = require('morgan');
-app.use(morgan('combined'));
-
-const bodyParser = require('body-parser');
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-
+const mongoose = require('mongoose');
 const cors = require('cors');
+const morgan = require('morgan');
+const session = require('express-session');
+
+const app = express();
+const PORT = process.env.PORT || 3002;
+const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017';
+const DB_NAME = process.env.DB_NAME || 'FashionData';
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(morgan('dev'));
+
 app.use(
   cors({
     origin(origin, callback) {
@@ -24,302 +24,195 @@ app.use(
   })
 );
 
-const { MongoClient, ObjectId } = require('mongodb');
+// Session cart is stored in server memory by default MemoryStore
+app.use(
+  session({
+    secret: 'Shh, it is a secret!',
+    resave: false,
+    saveUninitialized: true,
+    cookie: { maxAge: 24 * 60 * 60 * 1000 },
+  })
+);
 
-const client = new MongoClient('mongodb://127.0.0.1:27017', {
-  serverSelectionTimeoutMS: 5000,
-});
+const productSchema = new mongoose.Schema(
+  {
+    name: { type: String, required: true, trim: true },
+    price: { type: Number, required: true, min: 0 },
+    image: { type: String, default: '' },
+    description: { type: String, default: '' },
+    quantity: { type: Number, required: true, min: 0, default: 0 },
+  },
+  { collection: 'Product', timestamps: true }
+);
 
-let database = null;
-let fashionCollection = null;
-let userCollection = null;
+const Product = mongoose.model('Product', productSchema);
 
-async function seedSampleUsers() {
-  if (!userCollection) return;
+async function seedProducts() {
+  const count = await Product.countDocuments();
+  if (count > 0) return;
 
-  await userCollection.createIndex({ username: 1 }, { unique: true });
-  const samples = [
+  await Product.insertMany([
     {
-      username: 'tranduythanh',
-      password: '12345678',
-      fullName: 'Tran Duy Thanh',
-      role: 'student',
+      name: 'Diamond Promise Ring 1/6 ct',
+      price: 399.99,
+      image: 'https://images.unsplash.com/photo-1611652022419-a9419f74343d?q=80&w=1200&auto=format&fit=crop',
+      description: 'Round-cut 10K White Gold',
+      quantity: 20,
     },
     {
-      username: 'admin',
-      password: 'admin123',
-      fullName: 'System Admin',
-      role: 'admin',
+      name: 'Diamond Promise Ring 1/4 ct',
+      price: 529.0,
+      image: 'https://images.unsplash.com/photo-1603974372039-adc49044b6bd?q=80&w=1200&auto=format&fit=crop',
+      description: 'Round/Baguette 10K White Gold',
+      quantity: 15,
     },
-  ];
+    {
+      name: 'Diamond Promise Ring Black/White',
+      price: 159.0,
+      image: 'https://images.unsplash.com/photo-1588444837495-c6cfeb53f32d?q=80&w=1200&auto=format&fit=crop',
+      description: 'Sterling Silver',
+      quantity: 50,
+    },
+    {
+      name: 'Diamond Promise Ring 1/5 ct',
+      price: 289.0,
+      image: 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?q=80&w=1200&auto=format&fit=crop',
+      description: 'Round-cut Sterling Silver',
+      quantity: 35,
+    },
+    {
+      name: 'Diamond Promise Ring 1/8 ct',
+      price: 229.0,
+      image: 'https://images.unsplash.com/photo-1617038220319-276d3cfab638?q=80&w=1200&auto=format&fit=crop',
+      description: 'Sterling Silver Ring',
+      quantity: 40,
+    },
+  ]);
 
-  for (const sample of samples) {
-    await userCollection.updateOne(
-      { username: sample.username },
-      {
-        $set: {
-          password: sample.password,
-          fullName: sample.fullName,
-          role: sample.role,
-        },
-        $setOnInsert: { createdAt: new Date() },
-      },
-      { upsert: true }
-    );
-  }
-
-  console.log('Sample users synced into User collection');
+  console.log('Seeded sample products into Product collection');
 }
 
-async function connectMongo() {
-  try {
-    await client.connect();
-    database = client.db('FashionData');
-    fashionCollection = database.collection('Fashion');
-    userCollection = database.collection('User');
-
-    await database.command({ ping: 1 });
-    await seedSampleUsers();
-
-    console.log('Connected to MongoDB (FashionData)');
-  } catch (error) {
-    console.error('MongoDB connection failed:', error.message);
-    console.error('Cookie routes still available at /create-cookie, /read-cookie, /delete-cookie');
+function ensureCart(req) {
+  if (!Array.isArray(req.session.cart)) {
+    req.session.cart = [];
   }
-}
-
-function requireMongo(res) {
-  if (!database) {
-    res.status(503).json({
-      success: false,
-      error: 'MongoDB is not connected. Please start MongoDB and restart server.',
-    });
-    return false;
-  }
-  return true;
-}
-
-function getLoginCookie(req) {
-  const raw = req.cookies?.loginUser;
-  if (!raw) return null;
-
-  try {
-    return JSON.parse(raw);
-  } catch {
-    return null;
-  }
+  return req.session.cart;
 }
 
 app.get('/', (req, res) => {
   res.json({
-    message: 'Fashion Server Running on port 3002',
-    database: 'FashionData',
-    authApi: 'POST /api/auth/login',
+    message: 'E-commerce session cart API is running',
+    apis: ['/products', '/cart/add', '/cart', '/cart/update', '/cart/remove'],
   });
 });
 
-// ===== LOGIN REST API (POST) =====
-app.post('/api/auth/login', async (req, res) => {
-  if (!requireMongo(res)) return;
-
+// API 1: Get all products
+app.get('/products', async (req, res) => {
   try {
-    const { username, password } = req.body;
-
-    if (!username || !password) {
-      return res.status(400).json({
-        success: false,
-        message: 'username and password are required',
-      });
-    }
-
-    const user = await userCollection.findOne({ username, password });
-
-    if (!user) {
-      return res.status(401).json({
-        success: false,
-        message: 'Invalid username or password',
-      });
-    }
-
-    const loginUser = {
-      id: user._id,
-      username: user.username,
-      fullName: user.fullName,
-      role: user.role,
-      loginAt: new Date().toISOString(),
-    };
-
-    res.cookie('loginUser', JSON.stringify(loginUser), {
-      maxAge: 24 * 60 * 60 * 1000,
-      httpOnly: false,
-      sameSite: 'lax',
-    });
-
-    return res.json({
-      success: true,
-      message: 'Login successful',
-      user: loginUser,
-    });
+    const products = await Product.find().sort({ createdAt: -1 });
+    res.json(products);
   } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    res.status(500).json({ message: error.message });
   }
 });
 
-// Read login cookie for displaying on login page
-app.get('/api/auth/me', (req, res) => {
-  const loginUser = getLoginCookie(req);
+// API 2: Add product to cart (Session based)
+app.post('/cart/add', async (req, res) => {
+  try {
+    const { productId, quantity } = req.body;
+    if (!productId) {
+      return res.status(400).json({ message: 'productId is required' });
+    }
 
-  if (!loginUser) {
-    return res.json({
-      success: true,
-      loggedIn: false,
-      user: null,
-    });
+    const product = await Product.findById(productId);
+    if (!product) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+
+    const qtyToAdd = Number(quantity) > 0 ? Number(quantity) : 1;
+    const cart = ensureCart(req);
+    const existing = cart.find((item) => item.productId === String(product._id));
+
+    if (existing) {
+      existing.quantity += qtyToAdd;
+    } else {
+      cart.push({
+        productId: String(product._id),
+        name: product.name,
+        price: product.price,
+        quantity: qtyToAdd,
+      });
+    }
+
+    req.session.cart = cart;
+    res.json({ message: 'Added to cart', cart });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
+});
 
-  return res.json({
-    success: true,
-    loggedIn: true,
-    user: loginUser,
+// API 3: Get cart
+app.get('/cart', (req, res) => {
+  const cart = ensureCart(req);
+  res.json(cart);
+});
+
+// API 4: Update cart
+app.post('/cart/update', (req, res) => {
+  const cart = ensureCart(req);
+  const updates = Array.isArray(req.body?.updates) ? req.body.updates : [];
+
+  const updateMap = new Map();
+  updates.forEach((u) => {
+    if (u?.productId) {
+      updateMap.set(String(u.productId), Number(u.quantity));
+    }
   });
+
+  const nextCart = cart
+    .map((item) => {
+      if (!updateMap.has(item.productId)) return item;
+      const nextQty = updateMap.get(item.productId);
+      return { ...item, quantity: Number.isFinite(nextQty) ? nextQty : item.quantity };
+    })
+    .filter((item) => item.quantity > 0);
+
+  req.session.cart = nextCart;
+  res.json({ message: 'Cart updated', cart: nextCart });
 });
 
-app.post('/api/auth/logout', (req, res) => {
-  res.clearCookie('loginUser');
-  res.json({ success: true, message: 'Logged out' });
+// API 5: Remove product from cart
+app.post('/cart/remove', (req, res) => {
+  const cart = ensureCart(req);
+  const productIds = Array.isArray(req.body?.productIds) ? req.body.productIds.map(String) : [];
+
+  req.session.cart = cart.filter((item) => !productIds.includes(item.productId));
+  res.json({ message: 'Removed selected products', cart: req.session.cart });
 });
 
-// Demo page like exercise screenshot
-app.get('/login', (req, res) => {
-  const loginUser = getLoginCookie(req);
-  if (!loginUser) {
-    return res.send('You are not logged in');
+// Session demo endpoint from previous exercise
+app.get('/contact', cors(), (req, res) => {
+  if (req.session.visited != null) {
+    req.session.visited += 1;
+    return res.send(`You visited this page ${req.session.visited} times`);
   }
 
-  return res.send('User logged in');
+  req.session.visited = 1;
+  return res.send('Welcome to this page for the first time!');
 });
 
-// ===== COOKIE (Bai 60) =====
-app.get('/create-cookie', (req, res) => {
-  res.cookie('username', 'khanh');
-  res.cookie('role', 'admin');
-  res.cookie('account', { username: 'khanh', role: 'admin' });
-  res.send('Cookies created');
-});
-
-app.get('/read-cookie', (req, res) => {
-  res.json(req.cookies);
-});
-
-app.get('/delete-cookie', (req, res) => {
-  res.clearCookie('username');
-  res.clearCookie('role');
-  res.clearCookie('account');
-  res.send('Cookies deleted');
-});
-
-// ===== FASHION CRUD =====
-app.get('/fashions', async (req, res) => {
-  if (!requireMongo(res) || !fashionCollection) return;
+async function start() {
   try {
-    const result = await fashionCollection.find({}).toArray();
-    res.json({ success: true, data: result });
+    await mongoose.connect(MONGO_URI, { dbName: DB_NAME });
+    await seedProducts();
+
+    app.listen(PORT, () => {
+      console.log(`Server running on http://localhost:${PORT}`);
+    });
   } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
+    console.error('Failed to start server:', error.message);
+    process.exit(1);
   }
-});
+}
 
-app.get('/fashions/:id', async (req, res) => {
-  if (!requireMongo(res) || !fashionCollection) return;
-  try {
-    const { id } = req.params;
-    if (!ObjectId.isValid(id)) {
-      return res.status(400).json({ success: false, error: 'Invalid fashion id' });
-    }
-
-    const result = await fashionCollection.findOne({ _id: new ObjectId(id) });
-    if (!result) {
-      return res.status(404).json({ success: false, error: 'Fashion not found' });
-    }
-
-    res.json({ success: true, data: result });
-  } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
-  }
-});
-
-app.post('/fashions', async (req, res) => {
-  if (!requireMongo(res) || !fashionCollection) return;
-  try {
-    const result = await fashionCollection.insertOne(req.body);
-    res.json({ success: true, insertedId: result.insertedId });
-  } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
-  }
-});
-
-app.put('/fashions/:id', async (req, res) => {
-  if (!requireMongo(res) || !fashionCollection) return;
-  try {
-    const { id } = req.params;
-    if (!ObjectId.isValid(id)) {
-      return res.status(400).json({ success: false, error: 'Invalid fashion id' });
-    }
-
-    const result = await fashionCollection.updateOne(
-      { _id: new ObjectId(id) },
-      { $set: req.body }
-    );
-
-    res.json({ success: true, modifiedCount: result.modifiedCount });
-  } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
-  }
-});
-
-app.delete('/fashions/:id', async (req, res) => {
-  if (!requireMongo(res) || !fashionCollection) return;
-  try {
-    const { id } = req.params;
-    if (!ObjectId.isValid(id)) {
-      return res.status(400).json({ success: false, error: 'Invalid fashion id' });
-    }
-
-    const result = await fashionCollection.deleteOne({ _id: new ObjectId(id) });
-    res.json({ success: true, deletedCount: result.deletedCount });
-  } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
-  }
-});
-
-app.get('/health', async (req, res) => {
-  if (!database) {
-    return res.status(503).json({ status: 'ERROR', error: 'MongoDB is not connected' });
-  }
-
-  try {
-    await database.command({ ping: 1 });
-    res.json({ status: 'OK', message: 'Server is running', mongo: 'connected' });
-  } catch (error) {
-    res.status(500).json({ status: 'ERROR', error: error.message });
-  }
-});
-
-app.listen(port, () => {
-  console.log(`Server listening on http://localhost:${port}`);
-  console.log('Login API: POST http://localhost:3002/api/auth/login');
-  console.log('Read cookie: GET  http://localhost:3002/api/auth/me');
-  console.log(`Fashions endpoint: http://localhost:${port}/fashions`);
-});
-
-connectMongo();
-
-process.on('SIGINT', async () => {
-  console.log('\nShutting down...');
-  await client.close();
-  console.log('MongoDB connection closed');
-  process.exit(0);
-});
+start();

@@ -1,0 +1,210 @@
+<style>
+.products-wrap {
+  max-width: 1180px;
+  margin: 20px auto;
+  padding: 0 12px;
+}
+
+.products-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 28px 24px;
+}
+
+.product-card {
+  background: #fff;
+}
+
+.img-box {
+  height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+}
+
+.product-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.product-name {
+  margin: 12px 0 8px;
+  color: #4aa5df;
+  font-size: 29px;
+  line-height: 1.2;
+  font-weight: 500;
+  min-height: 70px;
+}
+
+.product-stars {
+  color: #a6a6a6;
+  letter-spacing: 1px;
+  margin-bottom: 10px;
+  font-size: 21px;
+}
+
+.product-price {
+  color: #5c5c5c;
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+
+.product-stock {
+  font-size: 18px;
+  color: #6b7280;
+  margin-bottom: 12px;
+}
+
+.product-actions {
+  display: grid;
+  grid-template-columns: 1fr 72px 72px;
+  gap: 0;
+  border: 1px solid #e1e1e1;
+  background: #f3f3f3;
+}
+
+.btn-cart {
+  border: 0;
+  background: #67b2f3;
+  color: #fff;
+  height: 44px;
+  font-size: 22px;
+  font-weight: 500;
+}
+
+.btn-icon {
+  border: 0;
+  border-left: 1px solid #e1e1e1;
+  background: #efefef;
+  color: #707070;
+  height: 44px;
+  font-size: 28px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+}
+
+.btn-cart:hover {
+  background: #539fe2;
+}
+
+.btn-icon:hover {
+  background: #ececec;
+}
+
+@media (max-width: 992px) {
+  .products-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .products-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .product-name {
+    font-size: 22px;
+    min-height: 54px;
+  }
+
+  .product-price {
+    font-size: 26px;
+  }
+
+  .btn-cart {
+    font-size: 18px;
+  }
+}
+</style>
+
+<!-- Product List View -->
+<div *ngIf="view === 'products'" class="products-wrap">
+  <div class="products-head">
+    <h3>Products</h3>
+    <button class="btn btn-warning" (click)="showCart()">View Cart ({{ cart.length }})</button>
+  </div>
+
+  <div *ngIf="message" class="alert alert-success">{{ message }}</div>
+
+  <div class="products-grid">
+    <article class="product-card" *ngFor="let p of products">
+      <div class="img-box">
+        <img [src]="p.image" class="product-img" alt="{{ p.name }}" />
+      </div>
+
+      <h6 class="product-name">{{ p.name }}</h6>
+      <div class="product-stars">&#9734;&#9734;&#9734;&#9734;&#9734;</div>
+      <div class="product-price">${{ p.price | number:'1.2-2' }}</div>
+      <div class="product-stock">In stock: {{ p.quantity }}</div>
+
+      <div class="product-actions">
+        <button class="btn-cart" (click)="addToCart(p._id)">ADD TO CART</button>
+        <button class="btn-icon" type="button" aria-label="Compare">&#8644;</button>
+        <button class="btn-icon" type="button" aria-label="Wishlist">&#9825;</button>
+      </div>
+    </article>
+  </div>
+</div>
+
+<!-- Shopping Cart View -->
+<div *ngIf="view === 'cart'" class="container mt-4">
+  <h3 class="text-center mb-3">Shopping Cart</h3>
+
+  <div *ngIf="cart.length === 0" class="alert alert-info text-center">
+    Your cart is empty.
+    <button class="btn btn-link" (click)="showProducts()">Continue shopping</button>
+  </div>
+
+  <div *ngIf="cart.length > 0">
+    <table class="table table-bordered">
+      <thead class="table-light">
+        <tr>
+          <th>Remove</th>
+          <th>SKU</th>
+          <th>Product(s)</th>
+          <th>Price</th>
+          <th>Qty</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of cart; let i = index">
+          <td class="text-center">
+            <input type="checkbox" [value]="item.productId" (change)="toggleRemove(item.productId, $any($event.target).checked)" />
+          </td>
+          <td>{{ i + 1 }}</td>
+          <td>{{ item.name }}</td>
+          <td>${{ item.price | number:'1.2-2' }}</td>
+          <td>
+            <input type="number" class="form-control form-control-sm" style="width: 70px" [(ngModel)]="item.quantity" min="1" />
+          </td>
+          <td>${{ item.price * item.quantity | number:'1.2-2' }}</td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="5" class="text-end fw-bold">Total:</td>
+          <td class="fw-bold">${{ getTotal() | number:'1.2-2' }}</td>
+        </tr>
+      </tfoot>
+    </table>
+
+    <div class="d-flex justify-content-end gap-2 mt-2">
+      <button class="btn btn-danger" (click)="removeSelected()">Remove selected</button>
+      <button class="btn btn-primary" (click)="updateCart()">Update shopping cart</button>
+      <button class="btn btn-secondary" (click)="showProducts()">Continue shopping</button>
+    </div>
+  </div>
+</div>

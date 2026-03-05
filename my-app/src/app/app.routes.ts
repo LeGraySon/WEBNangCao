@@ -5,6 +5,7 @@ import { PaymentComponent } from './payment/payment.component';
 import { PaymentResultComponent } from './payment-result/payment-result.component';
 import { FashionComponent } from './fashion/fashion';
 import { Login } from './login/login';
+import { Ex63Component } from './ex63/ex63';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -13,5 +14,6 @@ export const routes: Routes = [
   { path: 'contact', component: Contact },
   { path: 'payment', component: PaymentComponent },
   { path: 'payment-result', component: PaymentResultComponent },
-  { path: 'fashion', component: FashionComponent }
+  { path: 'fashion', component: FashionComponent },
+  { path: 'ex63', component: Ex63Component }
 ];
