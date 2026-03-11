@@ -47,6 +47,22 @@ const productSchema = new mongoose.Schema(
 
 const Product = mongoose.model('Product', productSchema);
 
+const fashionSchema = new mongoose.Schema(
+  {
+    fashion_subject: { type: String, trim: true },
+    fashion_detail: { type: String, default: '' },
+    fashion_image: { type: String, default: '' },
+    title: { type: String, trim: true },
+    details: { type: String, default: '' },
+    thumbnail: { type: String, default: '' },
+    style: { type: String, default: '' },
+    creationDate: { type: Date, default: Date.now },
+  },
+  { collection: 'Fashion', timestamps: true }
+);
+
+const Fashion = mongoose.model('Fashion', fashionSchema);
+
 async function seedProducts() {
   const count = await Product.countDocuments();
   if (count > 0) return;
@@ -92,6 +108,66 @@ async function seedProducts() {
   console.log('Seeded sample products into Product collection');
 }
 
+async function seedFashions() {
+  const count = await Fashion.countDocuments();
+  if (count > 0) return;
+
+  await Fashion.insertMany([
+    {
+      fashion_subject: 'Summer T-Shirt',
+      fashion_detail: '100% cotton, comfortable and breathable',
+      fashion_image: 'https://via.placeholder.com/200?text=TShirt',
+      title: 'Summer T-Shirt',
+      details: '100% cotton, comfortable and breathable',
+      thumbnail: 'https://via.placeholder.com/600x400?text=TShirt',
+      style: 'Street Style',
+      creationDate: new Date('2025-06-10'),
+    },
+    {
+      fashion_subject: 'Business Suit',
+      fashion_detail: 'Premium wool blend, professional look',
+      fashion_image: 'https://via.placeholder.com/200?text=Suit',
+      title: 'Business Suit',
+      details: 'Premium wool blend, professional look',
+      thumbnail: 'https://via.placeholder.com/600x400?text=Suit',
+      style: 'Minimal',
+      creationDate: new Date('2025-05-22'),
+    },
+    {
+      fashion_subject: 'Running Shoes',
+      fashion_detail: 'Lightweight and supportive for marathons',
+      fashion_image: 'https://via.placeholder.com/200?text=Shoes',
+      title: 'Running Shoes',
+      details: 'Lightweight and supportive for marathons',
+      thumbnail: 'https://via.placeholder.com/600x400?text=Shoes',
+      style: 'Trends',
+      creationDate: new Date('2025-04-15'),
+    },
+    {
+      fashion_subject: 'Denim Jeans',
+      fashion_detail: 'Classic blue denim, perfect fit',
+      fashion_image: 'https://via.placeholder.com/200?text=Jeans',
+      title: 'Denim Jeans',
+      details: 'Classic blue denim, perfect fit',
+      thumbnail: 'https://via.placeholder.com/600x400?text=Jeans',
+      style: 'Street Style',
+      creationDate: new Date('2025-03-30'),
+    },
+    {
+      fashion_subject: 'Evening Dress',
+      fashion_detail: 'Elegant design with silk fabric',
+      fashion_image: 'https://via.placeholder.com/200?text=Dress',
+      title: 'Evening Dress',
+      details: 'Elegant design with silk fabric',
+      thumbnail: 'https://via.placeholder.com/600x400?text=Dress',
+      style: 'Trends',
+      creationDate: new Date('2025-02-14'),
+    },
+  ]);
+
+  console.log('Seeded sample fashions into Fashion collection');
+}
+
 function ensureCart(req) {
   if (!Array.isArray(req.session.cart)) {
     req.session.cart = [];
@@ -102,7 +178,15 @@ function ensureCart(req) {
 app.get('/', (req, res) => {
   res.json({
     message: 'E-commerce session cart API is running',
-    apis: ['/products', '/cart/add', '/cart', '/cart/update', '/cart/remove'],
+    apis: [
+      '/products',
+      '/fashions',
+      '/api/fashions',
+      '/cart/add',
+      '/cart',
+      '/cart/update',
+      '/cart/remove',
+    ],
   });
 });
 
@@ -111,6 +195,182 @@ app.get('/products', async (req, res) => {
   try {
     const products = await Product.find().sort({ createdAt: -1 });
     res.json(products);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// API: Get all fashions
+app.get('/fashions', async (req, res) => {
+  try {
+    const fashions = await Fashion.find().sort({ createdAt: -1 });
+    res.json({ data: fashions });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// API: Get fashion by id
+app.get('/fashions/:id', async (req, res) => {
+  try {
+    const fashion = await Fashion.findById(req.params.id);
+    if (!fashion) {
+      return res.status(404).json({ message: 'Fashion not found' });
+    }
+    res.json({ data: fashion });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// API: Get all fashions (Exercise 58)
+app.get('/api/fashions', async (req, res) => {
+  try {
+    const fashions = await Fashion.find()
+      .sort({ creationDate: -1, createdAt: -1 })
+      .lean();
+    res.json(fashions.map(normalizeFashion));
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// API: Filter fashions by style
+app.get('/api/fashions/style/:style', async (req, res) => {
+  try {
+    const style = String(req.params.style || '').trim();
+    const fashions = await Fashion.find({ style })
+      .sort({ creationDate: -1, createdAt: -1 })
+      .lean();
+    res.json(fashions.map(normalizeFashion));
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// API: Get fashion by id
+app.get('/api/fashions/:id', async (req, res) => {
+  try {
+    const fashion = await Fashion.findById(req.params.id).lean();
+    if (!fashion) {
+      return res.status(404).json({ message: 'Fashion not found' });
+    }
+    res.json(normalizeFashion(fashion));
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// API: Create fashion
+app.post('/api/fashions', async (req, res) => {
+  try {
+    const payload = {
+      title: String(req.body?.title || '').trim(),
+      details: String(req.body?.details || ''),
+      thumbnail: String(req.body?.thumbnail || ''),
+      style: String(req.body?.style || ''),
+      creationDate: req.body?.creationDate || undefined,
+    };
+
+    if (!payload.title) {
+      return res.status(400).json({ message: 'title is required' });
+    }
+
+    const fashion = await Fashion.create(payload);
+    res.status(201).json(fashion);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+});
+
+// API: Update fashion
+app.put('/api/fashions/:id', async (req, res) => {
+  try {
+    const payload = {
+      title: String(req.body?.title || '').trim(),
+      details: String(req.body?.details || ''),
+      thumbnail: String(req.body?.thumbnail || ''),
+      style: String(req.body?.style || ''),
+      creationDate: req.body?.creationDate || undefined,
+    };
+
+    if (!payload.title) {
+      return res.status(400).json({ message: 'title is required' });
+    }
+
+    const fashion = await Fashion.findByIdAndUpdate(req.params.id, payload, {
+      new: true,
+      runValidators: true,
+    }).lean();
+
+    if (!fashion) {
+      return res.status(404).json({ message: 'Fashion not found' });
+    }
+
+    res.json(normalizeFashion(fashion));
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+});
+
+// API: Delete fashion
+app.delete('/api/fashions/:id', async (req, res) => {
+  try {
+    const fashion = await Fashion.findByIdAndDelete(req.params.id);
+    if (!fashion) {
+      return res.status(404).json({ message: 'Fashion not found' });
+    }
+    res.json({ message: 'Fashion deleted' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+function normalizeFashion(doc) {
+  return {
+    _id: doc?._id,
+    title: doc?.title || doc?.fashion_subject || '',
+    details: doc?.details || doc?.fashion_detail || '',
+    thumbnail: doc?.thumbnail || doc?.fashion_image || '',
+    style: doc?.style || '',
+    creationDate: doc?.creationDate || doc?.createdAt || null,
+  };
+}
+
+// API: Create fashion
+app.post('/fashions', async (req, res) => {
+  try {
+    const fashion = await Fashion.create(req.body);
+    res.status(201).json({ message: 'Fashion created', data: fashion });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+});
+
+// API: Update fashion
+app.put('/fashions/:id', async (req, res) => {
+  try {
+    const fashion = await Fashion.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    });
+    if (!fashion) {
+      return res.status(404).json({ message: 'Fashion not found' });
+    }
+    res.json({ message: 'Fashion updated', data: fashion });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+});
+
+// API: Delete fashion
+app.delete('/fashions/:id', async (req, res) => {
+  try {
+    const fashion = await Fashion.findByIdAndDelete(req.params.id);
+    if (!fashion) {
+      return res.status(404).json({ message: 'Fashion not found' });
+    }
+    res.json({ message: 'Fashion deleted', data: fashion });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -205,6 +465,7 @@ async function start() {
   try {
     await mongoose.connect(MONGO_URI, { dbName: DB_NAME });
     await seedProducts();
+    await seedFashions();
 
     app.listen(PORT, () => {
       console.log(`Server running on http://localhost:${PORT}`);

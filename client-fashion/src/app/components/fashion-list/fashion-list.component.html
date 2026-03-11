@@ -1,0 +1,23 @@
+﻿<app-style-filter
+  [styles]="styles"
+  [selected]="selectedStyle"
+  (styleChange)="onStyleChange($event)">
+</app-style-filter>
+
+<div *ngIf="loading" class="alert alert-info">Loading...</div>
+<div *ngIf="!loading && visibleStyles.length === 0" class="alert alert-warning">No items found.</div>
+
+<div *ngFor="let style of visibleStyles">
+  <h3 class="mt-4">{{ style }}</h3>
+  <div class="row g-3">
+    <div class="col-12 col-sm-6 col-lg-4" *ngFor="let item of (groupedFashions[style] || [])">
+      <div class="card h-100 shadow-sm">
+        <img [src]="item.thumbnail" class="card-img-top" [alt]="item.title" />
+        <div class="card-body">
+          <h5 class="card-title">{{ item.title }}</h5>
+          <a class="stretched-link" [routerLink]="['/fashion', item._id]"></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -32,7 +32,8 @@ export class FashionComponent implements OnInit {
   loadFashions(): void {
     this.fashionService.getFashions().subscribe({
       next: (data) => {
-        this.fashions = data.data || [];
+        const payload = (data && (data.data ?? data)) as any;
+        this.fashions = Array.isArray(payload) ? payload : [];
         this.errMessage = '';
       },
       error: (err) => {

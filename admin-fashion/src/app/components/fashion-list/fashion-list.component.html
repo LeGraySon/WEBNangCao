@@ -1,0 +1,32 @@
+﻿<div class="d-flex align-items-center justify-content-between mb-3">
+  <h2 class="m-0">Fashion Items</h2>
+  <a class="btn btn-primary" routerLink="/fashions/new">Add New Fashion</a>
+</div>
+
+<div *ngIf="error" class="alert alert-danger">{{ error }}</div>
+<div *ngIf="loading" class="alert alert-info">Loading...</div>
+
+<table class="table table-striped align-middle" *ngIf="!loading">
+  <thead>
+    <tr>
+      <th>Thumbnail</th>
+      <th>Title</th>
+      <th>Style</th>
+      <th>Creation Date</th>
+      <th class="text-end">Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let item of fashions">
+      <td><img [src]="item.thumbnail" [alt]="item.title" class="thumb" /></td>
+      <td>{{ item.title }}</td>
+      <td>{{ item.style }}</td>
+      <td>{{ item.creationDate | date: 'yyyy-MM-dd' }}</td>
+      <td class="text-end">
+        <a class="btn btn-outline-secondary btn-sm me-2" [routerLink]="['/fashions', item._id]">View</a>
+        <a class="btn btn-outline-primary btn-sm me-2" [routerLink]="['/fashions', item._id, 'edit']">Edit</a>
+        <button class="btn btn-outline-danger btn-sm" (click)="deleteFashion(item)">Delete</button>
+      </td>
+    </tr>
+  </tbody>
+</table>

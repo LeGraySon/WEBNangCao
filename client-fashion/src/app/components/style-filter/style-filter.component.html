@@ -1,0 +1,9 @@
+﻿<div class="row g-2 align-items-end mb-4">
+  <div class="col-auto">
+    <label class="form-label">Filter by style</label>
+    <select class="form-select" [ngModel]="selected" (ngModelChange)="onSelect($event)">
+      <option value="All">All</option>
+      <option *ngFor="let style of styles" [value]="style">{{ style }}</option>
+    </select>
+  </div>
+</div>

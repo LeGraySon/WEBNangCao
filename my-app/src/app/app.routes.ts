@@ -6,6 +6,7 @@ import { PaymentResultComponent } from './payment-result/payment-result.componen
 import { FashionComponent } from './fashion/fashion';
 import { Login } from './login/login';
 import { Ex63Component } from './ex63/ex63';
+import { Ex58 } from './ex58/ex58';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -15,5 +16,6 @@ export const routes: Routes = [
   { path: 'payment', component: PaymentComponent },
   { path: 'payment-result', component: PaymentResultComponent },
   { path: 'fashion', component: FashionComponent },
+  { path: 'ex58', component: Ex58 },
   { path: 'ex63', component: Ex63Component }
 ];

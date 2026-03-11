@@ -1,0 +1,35 @@
+﻿<h2 class="mb-3">{{ isEdit ? 'Edit Fashion' : 'Add New Fashion' }}</h2>
+
+<form [formGroup]="form" (ngSubmit)="onSubmit()" class="row g-3">
+  <div class="col-md-6">
+    <label class="form-label">Title</label>
+    <input class="form-control" formControlName="title" />
+  </div>
+
+  <div class="col-md-6">
+    <label class="form-label">Thumbnail URL</label>
+    <input class="form-control" formControlName="thumbnail" />
+  </div>
+
+  <div class="col-md-4">
+    <label class="form-label">Style</label>
+    <select class="form-select" formControlName="style">
+      <option *ngFor="let s of styles" [value]="s">{{ s }}</option>
+    </select>
+  </div>
+
+  <div class="col-md-4">
+    <label class="form-label">Creation Date</label>
+    <input type="date" class="form-control" formControlName="creationDate" />
+  </div>
+
+  <div class="col-12">
+    <label class="form-label">Details</label>
+    <quill-editor formControlName="details" [styles]="{ height: '200px' }"></quill-editor>
+  </div>
+
+  <div class="col-12 d-flex gap-2">
+    <button class="btn btn-primary" type="submit">Save</button>
+    <a class="btn btn-outline-secondary" routerLink="/fashions">Cancel</a>
+  </div>
+</form>

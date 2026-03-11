@@ -1,0 +1,64 @@
+<div class="ex58">
+  <header class="hero">
+    <h1>FASHION LOOKBOOK</h1>
+    <p>Display fashion items grouped by style.</p>
+  </header>
+
+  <div class="toolbar">
+    <input
+      name="keyword"
+      [(ngModel)]="keyword"
+      (input)="applyFilter()"
+      placeholder="Try 'street style' or 'trends'"
+    />
+    <button type="button" (click)="applyFilter()">SEARCH</button>
+  </div>
+
+  <div class="modal-backdrop" *ngIf="selected" (click)="closeDetail()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <button type="button" class="detail-close" (click)="closeDetail()">Close</button>
+      <div class="detail-grid">
+        <div class="detail-image" *ngIf="selected.thumbnail || selected.fashion_image">
+          <img [src]="selected.thumbnail || selected.fashion_image" [alt]="selected.title" />
+        </div>
+        <div class="detail-body">
+          <h2>{{ selected.title }}</h2>
+          <p class="detail-meta">
+            <span *ngIf="selected.style">{{ selected.style }}</span>
+            <span *ngIf="selected.creationDate">
+              • {{ selected.creationDate | date: 'yyyy-MM-dd' }}
+            </span>
+          </p>
+          <p class="detail-text">{{ selected.details }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <p class="error" *ngIf="error">{{ error }}</p>
+  <p class="loading" *ngIf="loading">Loading...</p>
+  <p class="empty" *ngIf="!loading && groupedFashions.length === 0">No fashion items found.</p>
+
+  <section *ngFor="let group of groupedFashions" class="group">
+    <h2>{{ group.style | uppercase }}</h2>
+    <div class="grid">
+      <article
+        *ngFor="let item of group.items"
+        class="card"
+        tabindex="0"
+        (click)="openDetail(item)"
+        (keydown.enter)="openDetail(item)"
+      >
+        <div class="thumb">
+          <img
+            *ngIf="item.thumbnail || item.fashion_image"
+            [src]="item.thumbnail || item.fashion_image"
+            [alt]="item.title"
+          />
+        </div>
+        <h3>{{ item.title }}</h3>
+        <p>{{ item.details }}</p>
+      </article>
+    </div>
+  </section>
+</div>

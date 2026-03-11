@@ -1,0 +1,7 @@
+﻿<a routerLink="/" class="btn btn-link mb-3">Back</a>
+
+<div *ngIf="fashion">
+  <h1 class="mb-3">{{ fashion.title }}</h1>
+  <img [src]="fashion.thumbnail" [alt]="fashion.title" class="img-fluid mb-3" />
+  <div [innerHTML]="fashion.details"></div>
+</div>
